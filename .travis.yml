@@ -1,6 +1,0 @@
-language: java
-jdk:
-  - openjdk8
-after_success:
-  - set -e
-  - if [[ "$TRAVIS_BRANCH" = "master" && "$TRAVIS_COMMIT_MESSAGE" != \[maven-release-plugin\]* ]]; then bash ./release.sh; fi
