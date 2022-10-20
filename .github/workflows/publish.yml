@@ -13,7 +13,7 @@ env:
   GIT_COMMITTER_EMAIL: "oss@post.ch"
 
 jobs:
-  build:
+  publish:
     runs-on: ubuntu-latest
 
     steps:
