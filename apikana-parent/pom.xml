@@ -22,7 +22,7 @@
                     <artifactId>jsonschema2pojo-maven-plugin</artifactId>
                     <version>0.4.37</version>
                     <configuration>
-                        <sourceDirectory>${basedir}/target/api/model/json-schema-v3</sourceDirectory>
+                        <sourceDirectory>${basedir}/target/node/dist/model/json-schema-v3</sourceDirectory>
                         <includeJsr303Annotations>true</includeJsr303Annotations>
                         <useJodaDates>true</useJodaDates>
                         <useJodaLocalDates>true</useJodaLocalDates>

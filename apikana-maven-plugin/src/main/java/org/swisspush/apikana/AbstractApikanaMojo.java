@@ -1,12 +1,13 @@
 package org.swisspush.apikana;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.InputStream;
+import java.nio.file.Files;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.resolver.ArtifactResolutionRequest;
 import org.apache.maven.artifact.resolver.ArtifactResolutionResult;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Plugin;
-import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.BuildPluginManager;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -26,11 +27,12 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import org.yaml.snakeyaml.Yaml;
 
 import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
 
 public abstract class AbstractApikanaMojo extends AbstractMojo {
-    protected final static String OUTPUT = "target/api";
+    protected final static String OUTPUT = "target/node/dist";
 
     @Parameter(defaultValue = "${project}", readonly = true)
     protected MavenProject mavenProject;
@@ -75,8 +77,58 @@ public abstract class AbstractApikanaMojo extends AbstractMojo {
      *
      * <p>Default: 0.0.0</p>
      */
-    @Parameter(defaultValue = "0.0.0", property = "apikana.defaults.version")
+    @Parameter(defaultValue = "0.0.80", property = "apikana.defaults.version")
     protected String apikanaDefaultsVersion;
+
+    /**
+     * The java package that should be used.
+     */
+    @Parameter(property = "apikana.java-package")
+    protected String javaPackage;
+
+    /**
+     * The main API file (yaml or json).
+     */
+    @Parameter(defaultValue = "src/openapi/api.yaml", property = "apikana.api")
+    protected String api;
+
+    /**
+     * The typescript version which should be added to package.json
+     */
+    @Parameter(property = "apikana.typescript.version")
+    protected String typescriptVersion;
+
+    /**
+     * The scope used to name the package
+     */
+    @Parameter(property = "apikana.scope")
+    protected String scope;
+
+    /**
+     * The apikana API type. One of "rest-api", "stream-api", "api".
+     */
+    @Parameter(defaultValue = "rest-api", property = "apikana.type")
+    protected String type;
+
+    /**
+     * The organization namespace eg. example.com
+     */
+    @Parameter(property = "apikana.domain")
+    protected String domain;
+
+    /**
+     * The full API namespace as required by apikana init
+     */
+    @Parameter(property = "apikana.namespace")
+    protected String namespace;
+
+    /**
+     * The API shortname
+     */
+    @Parameter(property = "apikana.shortname")
+    protected String shortname;
+
+    private final ObjectMapper mapper = new ObjectMapper();
 
     protected void unpackModelDependencies() throws IOException {
         for (final Artifact a : mavenProject.getArtifacts()) {
@@ -133,9 +185,8 @@ public abstract class AbstractApikanaMojo extends AbstractMojo {
         }
     }
 
-    private void updateJson(File file, Consumer<Map<String, Object>> updater) throws IOException {
-        final ObjectMapper mapper = new ObjectMapper();
-        final Map<String, Object> json = file.exists() ? mapper.readValue(file, Map.class) : new HashMap<>();
+    private void createJson(File file, Consumer<Map<String, Object>> updater) throws IOException {
+        final Map<String, Object> json = new LinkedHashMap<>();
         updater.accept(json);
         mapper.writer().withDefaultPrettyPrinter().writeValue(file, json);
     }
@@ -164,7 +215,7 @@ public abstract class AbstractApikanaMojo extends AbstractMojo {
         final Map<String, Object> propectProps = new ProjectSerializer().serialize(mavenProject);
         final File file = working("properties.json");
         file.getParentFile().mkdirs();
-        new ObjectMapper().writeValue(file, propectProps);
+        mapper.writeValue(file, propectProps);
     }
 
     protected boolean isPom() {
@@ -172,21 +223,142 @@ public abstract class AbstractApikanaMojo extends AbstractMojo {
     }
 
     protected void generatePackageJson(String version) throws IOException {
-        updateJson(working("package.json"), pack -> {
-            pack.put("name", mavenProject.getArtifactId());
+        createJson(working("package.json"), pack -> {
+            Map<String, Object> apiSpec = parseApiSpec();
+            pack.put("name", getName());
             pack.put("version", apiVersion);
-            final Map<String, String> scripts = (Map) pack.merge("scripts", new HashMap<>(), (oldVal, newVal) -> oldVal);
+            pack.put("description", getDescription(apiSpec));
+
+            final Map<String, String> scripts = (Map) pack.merge("scripts", new LinkedHashMap<>(), (oldVal, newVal) -> oldVal);
             scripts.put("apikana", "apikana");
-            final Map<String, String> devDependencies = (Map) pack.merge("devDependencies", new HashMap<>(), (oldVal, newVal) -> oldVal);
-            final Map<String,List<String>> customConfig = (Map) pack.merge("customConfig", new HashMap<>(), (oldVal, newVal) -> oldVal);
+
+            String author = getAuthor(apiSpec);
+            if (author != null) {
+                pack.put("author", author);
+            }
+
+            pack.put("license", "Apache-2.0");
+
+            final Map<String, String> devDependencies = (Map) pack.merge("devDependencies", new LinkedHashMap<>(), (oldVal, newVal) -> oldVal);
+            devDependencies.put("apikana", version);
+            devDependencies.put("apikana-defaults", apikanaDefaultsVersion);
+            devDependencies.put("typescript", typescriptVersion);
+
+            final Map<String, Object> customConfig = (Map) pack.merge("customConfig", new LinkedHashMap<>(), (oldVal, newVal) -> oldVal);
+            customConfig.put("type", type);
+            customConfig.put("domain", domain);
+            if (author != null) {
+                customConfig.put("author", author);
+            }
+            customConfig.put("namespace", namespace);
+
+            if (shortname != null && shortname.length() > 0) {
+                customConfig.put("shortname", shortname);
+            }
+            customConfig.put("projectName", mavenProject.getArtifactId());
+            customConfig.put("title", getTitle(apiSpec));
+
             final List<String> plugins = new ArrayList<>();
             plugins.add("maven");
             plugins.add("readme");
+
             customConfig.put("plugins", plugins);
+            customConfig.put("javaPackage", javaPackage);
+            customConfig.put("mavenGroupId", mavenProject.getGroupId());
+
+            final Map<String, Object> avro = (Map) customConfig.merge("avro", new LinkedHashMap<>(), (oldVal, newVal) -> oldVal);
+            avro.put("enumAsString", true);
+            customConfig.put("avro", avro);
             pack.put("customConfig", customConfig);
-            devDependencies.put("apikana", version);
-            devDependencies.put("apikana-defaults", apikanaDefaultsVersion);
         });
+    }
+
+    private String getTitle(Map<String, Object> apiSpec) {
+        Map<String, Object> info = (Map<String, Object>) apiSpec.get("info");
+        return (String) info.get("title");
+    }
+
+    private String getAuthor(Map<String, Object> apiSpec) {
+        Map<String, Object> info = (Map<String, Object>) apiSpec.get("info");
+        Map<String, Object> contact = (Map<String, Object>) info.get("contact");
+
+        if (contact == null) {
+            return null;
+        }
+
+        StringBuilder authorBuilder = new StringBuilder();
+
+        if (contact.get("name") != null) {
+            authorBuilder.append(contact.get("name"));
+        }
+
+        if (contact.get("email") != null) {
+            if (authorBuilder.length() > 0) {
+                authorBuilder.append(" <")
+                        .append(contact.get("email"))
+                        .append(">");
+            } else {
+                authorBuilder.append(contact.get("email"));
+            }
+        }
+
+        if (contact.get("url") != null) {
+            if (authorBuilder.length() > 0) {
+                authorBuilder.append(" (")
+                        .append(contact.get("url"))
+                        .append(")");
+            } else {
+                authorBuilder.append(contact.get("url"));
+            }
+        }
+
+        return authorBuilder.toString();
+    }
+
+    private Map<String, Object> parseApiSpec() {
+        try {
+            String basedir = mavenProject.getBasedir().getAbsolutePath();
+            File apiSpecFile = new File(mavenProject.getBasedir(), api);
+            String apiSpecFilePath = apiSpecFile.getAbsolutePath();
+
+            getLog().info("basedir: " + basedir);
+            getLog().info("api: " + api);
+            getLog().info("apiSpecFile: " + apiSpecFilePath);
+
+            if (api.endsWith(".json")) {
+                return parseJsonApiSpec(apiSpecFile);
+            } else {
+                return parseYamlApiSpec(apiSpecFile);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Map<String, Object> parseYamlApiSpec(File yamlSpecFile) throws IOException {
+        Yaml yaml = new Yaml();
+        try (InputStream inputStream = Files.newInputStream(yamlSpecFile.toPath())) {
+            return yaml.load(inputStream);
+        }
+    }
+
+    private Map<String, Object> parseJsonApiSpec(File jsonSpecFile) throws IOException {
+        return mapper.readValue(jsonSpecFile, Map.class);
+    }
+
+    private String getDescription(Map<String, Object> apiSpec) {
+        Map<String, Object> info = (Map<String, Object>) apiSpec.get("info");
+        return (String) info.get("description");
+    }
+
+    private String getName() {
+        String artifactId = mavenProject.getArtifactId();
+
+        if(scope.length() == 0) {
+            return artifactId;
+        }
+
+        return String.format("%s/%s", this.scope.startsWith("@") ? this.scope : "@" + this.scope, artifactId);
     }
 
     protected void checkNodeInstalled() throws MojoExecutionException {
