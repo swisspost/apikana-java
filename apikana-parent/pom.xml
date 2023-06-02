@@ -15,55 +15,40 @@
     <description>A parent pom for APIs with apikana.</description>
 
     <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.jsonschema2pojo</groupId>
-                    <artifactId>jsonschema2pojo-maven-plugin</artifactId>
-                    <version>0.4.37</version>
-                    <configuration>
-                        <sourceDirectory>${basedir}/target/api/model/json-schema-v3</sourceDirectory>
-                        <includeJsr303Annotations>true</includeJsr303Annotations>
-                        <useJodaDates>true</useJodaDates>
-                        <useJodaLocalDates>true</useJodaLocalDates>
-                        <useJodaLocalTimes>true</useJodaLocalTimes>
-                        <generateBuilders>true</generateBuilders>
-                        <removeOldOutput>true</removeOldOutput>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <phase>generate-resources</phase>
-                            <goals>
-                                <goal>generate</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.swisspush.maven.plugins</groupId>
-                    <artifactId>apikana-maven-plugin</artifactId>
-                    <version>0.4.21</version>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>generate</goal>
-                                <goal>package</goal>
-                                <goal>stop-server</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-
         <plugins>
             <plugin>
                 <groupId>org.jsonschema2pojo</groupId>
                 <artifactId>jsonschema2pojo-maven-plugin</artifactId>
+                <configuration>
+                    <sourceDirectory>${basedir}/target/node/dist/model/json-schema-v3</sourceDirectory>
+                    <includeJsr303Annotations>true</includeJsr303Annotations>
+                    <useJodaDates>true</useJodaDates>
+                    <useJodaLocalDates>true</useJodaLocalDates>
+                    <useJodaLocalTimes>true</useJodaLocalTimes>
+                    <generateBuilders>true</generateBuilders>
+                    <removeOldOutput>true</removeOldOutput>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.swisspush.maven.plugins</groupId>
                 <artifactId>apikana-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                            <goal>package</goal>
+                            <goal>stop-server</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
@@ -72,22 +57,18 @@
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
-            <version>2.6</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.8.5</version>
         </dependency>
         <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
-            <version>1.1.0.Final</version>
         </dependency>
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
-            <version>2.9.7</version>
         </dependency>
     </dependencies>
 </project>

@@ -79,22 +79,10 @@ public class GenerateMojo extends AbstractApikanaMojo {
     private String apikanaVersion;
 
     /**
-     * The main API file (yaml or json).
-     */
-    @Parameter(defaultValue = "src/openapi/api.yaml", property = "apikana.api")
-    private String api;
-
-    /**
      * The directory containing the models, if no API file is given.
      */
     @Parameter(defaultValue = "src/ts", property = "apikana.models")
     private String models;
-
-    /**
-     * The java package that should be used.
-     */
-    @Parameter(property = "apikana.java-package")
-    private String javaPackage;
 
     /**
      * The path prefix to be used in the generated *Paths.java file.
@@ -175,15 +163,6 @@ public class GenerateMojo extends AbstractApikanaMojo {
     }
 
     private void installApikana() throws IOException, MojoExecutionException {
-        final File apikanaPackage = working("node_modules/apikana/package.json");
-        if (apikanaPackage.exists()) {
-            Map pack = new ObjectMapper().readValue(apikanaPackage, Map.class);
-            final String version = (String) pack.get("version");
-            if (apikanaVersion.equals(version)) {
-                getLog().info("apikana " + apikanaVersion + " already installed.");
-                return;
-            }
-        }
         executeFrontend("npm", configuration(element("arguments", npmOptions() + "install")));
     }
 
