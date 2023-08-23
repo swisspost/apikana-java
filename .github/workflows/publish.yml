@@ -5,8 +5,8 @@ on:
       - master
 
 env:
-  RELEASE_VERSION: "0.4.22"
-  DEVELOP_VERSION: "0.4.23-SNAPSHOT"
+  RELEASE_VERSION: "0.4.23"
+  DEVELOP_VERSION: "0.4.24-SNAPSHOT"
   GIT_AUTHOR_NAME: "@swisspost-devs"
   GIT_AUTHOR_EMAIL: "oss@post.ch"
   GIT_COMMITTER_NAME: "swisspost-devs"
@@ -39,3 +39,11 @@ jobs:
         CI_DEPLOY_USERNAME: ${{ secrets.CI_DEPLOY_USERNAME }}
         CI_DEPLOY_PASSWORD: ${{ secrets.CI_DEPLOY_PASSWORD }}
         CI_GPG_PASSPHRASE: ${{ secrets.CI_GPG_PASSPHRASE }}
+
+    - name: Merge back to develop
+      run: |
+        git fetch --depth 1 origin develop
+        git checkout develop
+        git fetch --shallow-since="$(git show -s --format=%ci develop)" origin master develop
+        git merge master --no-edit
+        git push origin develop

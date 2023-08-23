@@ -255,7 +255,7 @@ public abstract class AbstractApikanaMojo extends AbstractMojo {
             if (shortname != null && shortname.length() > 0) {
                 customConfig.put("shortname", shortname);
             }
-            customConfig.put("projectName", mavenProject.getArtifactId());
+            customConfig.put("projectName", getProjectName());
             customConfig.put("title", getTitle(apiSpec));
 
             final List<String> plugins = new ArrayList<>();
@@ -351,14 +351,36 @@ public abstract class AbstractApikanaMojo extends AbstractMojo {
         return (String) info.get("description");
     }
 
-    private String getName() {
-        String artifactId = mavenProject.getArtifactId();
+    private String getProjectName() {
+        return String.join("-", this.shortname, this.type);
+    }
 
-        if(scope.length() == 0) {
-            return artifactId;
+    private String getName() {
+        StringBuilder nameBuilder = new StringBuilder();
+
+        if (this.domain != null && this.domain.length() > 0) {
+            List<String> domainParts = new ArrayList<>(Arrays.asList(this.domain.split("\\.")));
+            Collections.reverse(domainParts);
+            String nodeDomain = String.join("-", domainParts);
+            nameBuilder.append("@").append(nodeDomain);
         }
 
-        return String.format("%s/%s", this.scope.startsWith("@") ? this.scope : "@" + this.scope, artifactId);
+        if (this.namespace != null && this.namespace.length() > 0) {
+            String nodeNamespace = this.namespace
+                .replace(".", "-")
+                .replace("-" + this.shortname, "");
+
+            if (nameBuilder.length() == 0) {
+                nameBuilder.append("@");
+            } else {
+                nameBuilder.append("-");
+            }
+            nameBuilder.append(nodeNamespace).append("/");
+        }
+
+        nameBuilder.append(getProjectName());
+
+        return nameBuilder.toString();
     }
 
     protected void checkNodeInstalled() throws MojoExecutionException {
