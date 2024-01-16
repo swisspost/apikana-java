@@ -253,7 +253,7 @@ public abstract class AbstractApikanaMojo extends AbstractMojo {
             customConfig.put("namespace", namespace);
 
             if (shortname != null && shortname.length() > 0) {
-                customConfig.put("shortname", shortname);
+                customConfig.put("shortName", shortname);
             }
             customConfig.put("projectName", getProjectName());
             customConfig.put("title", getTitle(apiSpec));
