@@ -73,5 +73,8 @@ There is a complete [documentation](https://nidi3.github.io/apikana-java/site/pl
 
 ### Development
 The development is done in the `develop` branch.
-Releasing is done by defining the release and new development version in `release.sh` and by rebasing the develop branch onto the master branch.
-[Travis CI](https://travis-ci.org) will then pick this up and perform the release.
+
+### Release
+Releasing is done by incrementing the new RELEASE and DEVELOP version in `publish.yml` and by merging the develop branch
+into the master branch. [GitHub Actions](https://github.com/swisspost/apikana-java/actions) will then pick this up and
+perform the release.
