@@ -25,7 +25,7 @@
         <connection>scm:git:https://github.com/swisspost/apikana-java.git</connection>
         <developerConnection>scm:git:https://github.com/swisspost/apikana-java.git</developerConnection>
         <url>https://github.com/swisspost/apikana-java</url>
-      <tag>apikana-0.4.21</tag>
+      <tag>apikana-0.4.23</tag>
   </scm>
 
     <licenses>
