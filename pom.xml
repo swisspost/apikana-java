@@ -4,7 +4,7 @@
 
     <groupId>org.swisspush.apikana</groupId>
     <artifactId>apikana</artifactId>
-    <version>0.4.23</version>
+    <version>0.4.24-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>${project.artifactId}</name>
