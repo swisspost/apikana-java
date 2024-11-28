@@ -6,17 +6,9 @@ import org.eclipse.jetty.util.FutureCallback;
 import org.eclipse.jetty.util.UrlEncoded;
 import org.eclipse.jetty.util.resource.Resource;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.awt.*;
 import java.io.*;
 import java.net.URI;
-import java.net.URL;
-import java.util.*;
-import java.util.List;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 
 public class ApiServer {
     private static final int PORT = 8334;
