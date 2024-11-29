@@ -45,7 +45,7 @@ jobs:
     - name: Merge back to develop
       run: |
         git fetch --depth 10 origin develop
-        git switch develop
+        git checkout develop
         git fetch --shallow-since="$(git show -s --format=%ci develop~2)" origin master develop
         git merge master --no-edit
         git push origin develop
