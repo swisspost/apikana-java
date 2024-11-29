@@ -1,6 +1,5 @@
 package org.swisspush.apikana;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.*;
 import org.codehaus.plexus.util.FileUtils;

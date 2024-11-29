@@ -5,8 +5,8 @@ on:
       - master
 
 env:
-  RELEASE_VERSION: "0.4.24"
-  DEVELOP_VERSION: "0.4.25-SNAPSHOT"
+  RELEASE_VERSION: "0.5.0"
+  DEVELOP_VERSION: "0.5.1-SNAPSHOT"
   GIT_AUTHOR_NAME: "@swisspost-devs"
   GIT_AUTHOR_EMAIL: "oss@post.ch"
   GIT_COMMITTER_NAME: "swisspost-devs"
@@ -17,12 +17,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
-    - name: Set up JDK 1.8
-      uses: joschi/setup-jdk@v2
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
       with:
-        java-version: '8'
+        java-version: '21'
+        distribution: 'temurin'
+        architecture: 'x64'
         server-id: sonatype-nexus-staging # Value of the distributionManagement/repository/id field of the pom.xml
         server-username: CI_DEPLOY_USERNAME # env variable for username in deploy
         server-password: CI_DEPLOY_PASSWORD # env variable for token in deploy
@@ -42,8 +44,8 @@ jobs:
 
     - name: Merge back to develop
       run: |
-        git fetch --depth 1 origin develop
+        git fetch --depth 2 origin develop
         git checkout develop
-        git fetch --shallow-since="$(git show -s --format=%ci develop)" origin master develop
+        git fetch --shallow-since="$(git show -s --format=%ci develop~1)" origin master develop
         git merge master --no-edit
         git push origin develop
