@@ -5,8 +5,8 @@ on:
       - master
 
 env:
-  RELEASE_VERSION: "0.5.0"
-  DEVELOP_VERSION: "0.5.1-SNAPSHOT"
+  RELEASE_VERSION: "0.6.0"
+  DEVELOP_VERSION: "0.6.1-SNAPSHOT"
   GIT_AUTHOR_NAME: "@swisspost-devs"
   GIT_AUTHOR_EMAIL: "oss@post.ch"
   GIT_COMMITTER_NAME: "swisspost-devs"
@@ -44,8 +44,8 @@ jobs:
 
     - name: Merge back to develop
       run: |
-        git fetch --depth 2 origin develop
+        git fetch --depth 10 origin develop
         git checkout develop
-        git fetch --shallow-since="$(git show -s --format=%ci develop~1)" origin master develop
+        git fetch --shallow-since="$(git show -s --format=%ci develop~2)" origin master develop
         git merge master --no-edit
         git push origin develop
