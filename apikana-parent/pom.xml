@@ -20,7 +20,7 @@
                 <groupId>org.jsonschema2pojo</groupId>
                 <artifactId>jsonschema2pojo-maven-plugin</artifactId>
                 <configuration>
-                    <sourceDirectory>${basedir}/target/node/dist/model/json-schema-v3</sourceDirectory>
+                    <sourceDirectory>${basedir}/target/node/dist/model/json-schema-v4-full</sourceDirectory>
                     <includeJsr303Annotations>true</includeJsr303Annotations>
                     <useJakartaValidation>true</useJakartaValidation>
                     <useJodaDates>true</useJodaDates>
