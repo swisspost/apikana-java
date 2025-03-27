@@ -1,5 +1,5 @@
 # apikana-java
-The java side of [apikana](https://github.com/lbovet/apikana).
+The java side of [apikana](https://github.com/swisspost/apikana).
 
 ## Usage
 
