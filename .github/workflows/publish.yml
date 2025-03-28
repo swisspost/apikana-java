@@ -5,8 +5,8 @@ on:
       - master
 
 env:
-  RELEASE_VERSION: "0.7.0"
-  DEVELOP_VERSION: "0.7.1-SNAPSHOT"
+  RELEASE_VERSION: "0.7.1"
+  DEVELOP_VERSION: "0.7.2-SNAPSHOT"
   GIT_AUTHOR_NAME: "@swisspost-devs"
   GIT_AUTHOR_EMAIL: "oss@post.ch"
   GIT_COMMITTER_NAME: "swisspost-devs"
