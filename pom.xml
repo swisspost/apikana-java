@@ -13,12 +13,15 @@
     <description>Java part of apikana</description>
 
     <modules>
+        <module>apikana-jsonschema2pojo</module>
         <module>apikana-maven-plugin</module>
         <module>apikana-parent</module>
     </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jsonschema2pojo.version>1.2.2</jsonschema2pojo.version>
+        <apikana-maven-plugin.version>${project.version}</apikana-maven-plugin.version>
     </properties>
 
     <scm>
@@ -102,6 +105,11 @@
                 <version>9.4.53.v20231009</version>
             </dependency>
             <dependency>
+                <groupId>org.jsonschema2pojo</groupId>
+                <artifactId>jsonschema2pojo-core</artifactId>
+                <version>${jsonschema2pojo.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.twdata.maven</groupId>
                 <artifactId>mojo-executor</artifactId>
                 <version>2.4.0</version>
@@ -157,7 +165,7 @@
                 <plugin>
                     <groupId>org.jsonschema2pojo</groupId>
                     <artifactId>jsonschema2pojo-maven-plugin</artifactId>
-                    <version>1.2.2</version>
+                    <version>${jsonschema2pojo.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.sonatype.plugins</groupId>
