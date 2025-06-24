@@ -14,8 +14,10 @@ has not been addressed so far. Please also refer to
 
 Fortunately the library allows to hook into the generation process by providing implementations of the
 rule classes. This module does exactly that. It provides the two classes `ApikanaObjectRule` and
-`ApikanaTypeRule`. The implementation of those classes is the same as in the library, but without
-the above-mentioned breaking change.
+`ApikanaTypeRule` as replacements for the original classes
+([ObjectRule](https://github.com/joelittlejohn/jsonschema2pojo/blob/master/jsonschema2pojo-core/src/main/java/org/jsonschema2pojo/rules/ObjectRule.java)
+and [TypeRule](https://github.com/joelittlejohn/jsonschema2pojo/blob/master/jsonschema2pojo-core/src/main/java/org/jsonschema2pojo/rules/TypeRule.java)).
+The implementation of those classes is the same as in the library, but without the above-mentioned breaking change.
 
 ## How to use this module
 
