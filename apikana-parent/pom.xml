@@ -28,6 +28,7 @@
                     <useJodaLocalTimes>true</useJodaLocalTimes>
                     <generateBuilders>true</generateBuilders>
                     <removeOldOutput>true</removeOldOutput>
+                    <customRuleFactory>org.swisspush.apikana.jsonschema2pojo.ApikanaRuleFactory</customRuleFactory>
                 </configuration>
                 <executions>
                     <execution>
@@ -37,6 +38,13 @@
                         </goals>
                     </execution>
                 </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.swisspush.apikana</groupId>
+                        <artifactId>apikana-jsonschema2pojo</artifactId>
+                        <version>${apikana-maven-plugin.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.swisspush.maven.plugins</groupId>
