@@ -25,12 +25,12 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
         architecture: 'x64'
-        server-id: sonatype-nexus-staging # Value of the distributionManagement/repository/id field of the pom.xml
-        server-username: CI_DEPLOY_USERNAME # env variable for username in deploy
-        server-password: CI_DEPLOY_PASSWORD # env variable for token in deploy
+        server-id: central # Value of the distributionManagement/repository/id field of the pom.xml
+        server-username: MAVEN_USERNAME # env variable for username in deploy
+        server-password: MAVEN_PASSWORD # env variable for token in deploy
         gpg-private-key: ${{ secrets.CI_GPG_PRIVATE_KEY }} # Value of the GPG private key to import
         gpg-passphrase: CI_GPG_PASSPHRASE # env variable for GPG private key passphrase
-    
+
     - name: Release
       if: ${{ !contains(github.event.head_commit.message, '[maven-release-plugin]') }}
       run: |
@@ -38,8 +38,8 @@ jobs:
         mvn -B release:prepare -Pdo-release -DreleaseVersion=${RELEASE_VERSION} -DdevelopmentVersion=${DEVELOP_VERSION}
         mvn release:perform -Pdo-release
       env:
-        CI_DEPLOY_USERNAME: ${{ secrets.CI_DEPLOY_USERNAME }}
-        CI_DEPLOY_PASSWORD: ${{ secrets.CI_DEPLOY_PASSWORD }}
+        MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+        MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
         CI_GPG_PASSPHRASE: ${{ secrets.CI_GPG_PASSPHRASE }}
 
     - name: Merge back to develop
