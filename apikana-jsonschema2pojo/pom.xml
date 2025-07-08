@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.swisspush.apikana</groupId>
         <artifactId>apikana</artifactId>
-        <version>0.7.5</version>
+        <version>0.7.6-SNAPSHOT</version>
     </parent>
 
     <artifactId>apikana-jsonschema2pojo</artifactId>
