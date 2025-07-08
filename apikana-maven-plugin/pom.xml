@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.swisspush.apikana</groupId>
         <artifactId>apikana</artifactId>
-        <version>0.7.4-SNAPSHOT</version>
+        <version>0.7.5-SNAPSHOT</version>
     </parent>
 
     <groupId>org.swisspush.maven.plugins</groupId>
@@ -34,6 +34,30 @@
         </pluginManagement>
 
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <artifactId>maven-plugin-plugin</artifactId>
                 <executions>
